@@ -191,16 +191,29 @@ public class Main extends JavaPlugin implements Listener {
         boolean enableAI = tps >= disableVillagerAITps;
         for (String worldName : disableVillagerAIWorlds) {
             World world = Bukkit.getWorld(worldName);
-            if (world != null) setVillagersAI(world, enableAI);
+            if (world != null) {
+
+                setVillagersAI(world, enableAI);
+            }
         }
     }
 
     private void setVillagersAI(World world, boolean enableAI) {
-        for (LivingEntity entity : world.getLivingEntities()) {
-            if (entity.getType() == EntityType.VILLAGER) {
-                entity.setAI(enableAI);
+        if (folia) {
+            for (LivingEntity entity : world.getLivingEntities()) {
+                entity.getScheduler().run(this, task -> {
+                    if (entity.getType() == EntityType.VILLAGER) {
+                        entity.setAI(enableAI);
+                    }
+                },()->{});
             }
-        }
+        } else world.getChunkAtAsync(world.getSpawnLocation()).thenAccept(chunk -> {
+            for (LivingEntity entity : world.getLivingEntities()) {
+                if (entity.getType() == EntityType.VILLAGER) {
+                    entity.setAI(enableAI);
+                }
+            }
+        });
     }
 
     @Override

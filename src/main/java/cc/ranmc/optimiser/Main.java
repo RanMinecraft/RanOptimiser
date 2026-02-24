@@ -112,28 +112,30 @@ public class Main extends JavaPlugin implements Listener {
         // 生物堆叠器
         if (tps > tpsCheck) {
             // 分离
-            for (World world : Bukkit.getWorlds()) {
-                world.getChunkAtAsync(world.getSpawnLocation()).thenAccept(chunk -> {
-                    for (Entity entity : world.getEntities()) {
-                        if (stackerList.contains(entity.getType().name())) {
-                            String name = getEntityName(entity);
-                            if (name != null && name.contains(color("&cx"))) {
-                                int count = 0;
-                                try {
-                                    count += Integer.parseInt(name.replace(color("&cx"), ""));
-                                } catch (NumberFormatException ignored) {
+            if (!folia) {
+                for (World world : Bukkit.getWorlds()) {
+                    world.getChunkAtAsync(world.getSpawnLocation()).thenAccept(chunk -> {
+                        for (Entity entity : world.getEntities()) {
+                            if (stackerList.contains(entity.getType().name())) {
+                                String name = getEntityName(entity);
+                                if (name != null && name.contains(color("&cx"))) {
+                                    int count = 0;
+                                    try {
+                                        count += Integer.parseInt(name.replace(color("&cx"), ""));
+                                    } catch (NumberFormatException ignored) {
+                                    }
+                                    for (int ii = 1; ii < count; ii++) {
+                                        Location location = entity.getLocation();
+                                        Objects.requireNonNull(location.getWorld()).spawnEntity(location, entity.getType());
+                                    }
                                 }
-                                for (int ii = 1; ii < count; ii++) {
-                                    Location location = entity.getLocation();
-                                    Objects.requireNonNull(location.getWorld()).spawnEntity(location, entity.getType());
-                                }
+                                setEntityName(entity, null);
                             }
-                            setEntityName(entity, null);
                         }
-                    }
-                });
+                    });
+                }
             }
-        } else if (getConfig().getBoolean("stacker") && tps < tpsCheck) {
+        } else if (getConfig().getBoolean("stacker") && tps < tpsCheck && !folia) {
             // 合并
             for (World world : Bukkit.getWorlds()) {
                 for (Chunk chunk : world.getLoadedChunks()) {

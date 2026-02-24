@@ -191,10 +191,7 @@ public class Main extends JavaPlugin implements Listener {
         boolean enableAI = tps >= disableVillagerAITps;
         for (String worldName : disableVillagerAIWorlds) {
             World world = Bukkit.getWorld(worldName);
-            if (world != null) {
-
-                setVillagersAI(world, enableAI);
-            }
+            if (world != null) setVillagersAI(world, enableAI);
         }
     }
 
